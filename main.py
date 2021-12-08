@@ -18,6 +18,14 @@ def SetAliasWindows():
     return winsNumber
 
 def Action():
+    # 离线重进
+    win32api.keybd_event(13, 0, 0, 0)
+    win32api.keybd_event(13, 0, win32con.KEYEVENTF_KEYUP, 0)
+    time.sleep(10)
+    win32api.keybd_event(13, 0, 0, 0)
+    win32api.keybd_event(13, 0, win32con.KEYEVENTF_KEYUP, 0)
+    time.sleep(1)
+
     win32api.keybd_event(51, 0, 0, 0)
     win32api.keybd_event(51, 0, win32con.KEYEVENTF_KEYUP, 0)
     time.sleep(3)
