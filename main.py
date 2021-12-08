@@ -3,6 +3,7 @@ import win32api
 import win32con
 import time
 import win32clipboard as w
+import random
 
 def SetAliasWindows():
     winsNumber = 0
@@ -19,12 +20,12 @@ def SetAliasWindows():
 
 def Action():
     # 离线重进
-    win32api.keybd_event(13, 0, 0, 0)
-    win32api.keybd_event(13, 0, win32con.KEYEVENTF_KEYUP, 0)
-    time.sleep(10)
-    win32api.keybd_event(13, 0, 0, 0)
-    win32api.keybd_event(13, 0, win32con.KEYEVENTF_KEYUP, 0)
-    time.sleep(1)
+    # win32api.keybd_event(13, 0, 0, 0)
+    # win32api.keybd_event(13, 0, win32con.KEYEVENTF_KEYUP, 0)
+    # time.sleep(10)
+    # win32api.keybd_event(13, 0, 0, 0)
+    # win32api.keybd_event(13, 0, win32con.KEYEVENTF_KEYUP, 0)
+    # time.sleep(1)
 
     win32api.keybd_event(51, 0, 0, 0)
     win32api.keybd_event(51, 0, win32con.KEYEVENTF_KEYUP, 0)
@@ -73,5 +74,11 @@ while True:
     run(winsNumber)
     
     # step 4, 每次loop结束停顿一段时间t, t<离线时间, 最好设置t为随机数
-    t=1.0
+    A = 0
+    B = 1
+    a = random.uniform(A,B)
+    C = 2 #小数精度
+    # 选取0~1之间的随即小数作为base, 然后拉长到0~300秒
+    t = round(a,C) * 300
+    print("本次随机间隔为:",t)
     time.sleep(t)
