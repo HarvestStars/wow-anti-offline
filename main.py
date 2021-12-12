@@ -4,6 +4,8 @@ import win32con
 import time
 import win32clipboard as w
 import random
+import sys
+import signal
 
 def SetAliasWindows():
     winsNumber = 0
@@ -27,9 +29,20 @@ def Action():
     # win32api.keybd_event(13, 0, win32con.KEYEVENTF_KEYUP, 0)
     # time.sleep(1)
 
+    # 向左移动再向右移动 各0.5秒
+    win32api.keybd_event(65, 0, 0, 0) #A键位码是65
+    time.sleep(0.5)
+    win32api.keybd_event(65, 0, win32con.KEYEVENTF_KEYUP, 0)
+    win32api.keybd_event(68, 0, 0, 0) #D键位码是68
+    time.sleep(0.5)
+    win32api.keybd_event(68, 0, win32con.KEYEVENTF_KEYUP, 0)
+
+    # 按技能1
     win32api.keybd_event(51, 0, 0, 0)
     win32api.keybd_event(51, 0, win32con.KEYEVENTF_KEYUP, 0)
     time.sleep(3)
+
+    # 跳跃
     win32api.keybd_event(32, 0, 0, 0)  # space键位码是32
     win32api.keybd_event(32, 0, win32con.KEYEVENTF_KEYUP, 0)  # 释放按键
     time.sleep(1)
@@ -53,32 +66,44 @@ def run(winNumber):
 
 
 #----------------------------------------------------------------------------Main Process----------------------------------------------------------------------------------------------
+def handler(): 
+    try:
+        print("欢迎使用wow防离线工具, 请输入以下数字以执行指令:")
+        print("1: 启动防离线程序")
+        print("2: 退出程序")
+        cmd = input()
+        if cmd == "1":
+            # step 1, 将所有窗口还原为魔兽世界  
+            i = 0
+            while i < 100:  #撑死100开吧?
+                NameWithNumber = "魔兽世界%d" % (i)
+                win = win32gui.FindWindow(None, NameWithNumber)
+                if win !=0: 
+                    print("发现未还原名称的魔兽窗口:", NameWithNumber, "立刻将其还原为 魔兽世界。")
+                    win32gui.SetWindowText(win, '魔兽世界')
+                else:
+                    i+=1
 
-# step 1, 将所有窗口还原为魔兽世界  
-i = 0
-while i < 100:  #撑死100开吧?
-    NameWithNumber = "魔兽世界%d" % (i)
-    win = win32gui.FindWindow(None, NameWithNumber)
-    if win !=0: 
-        print("发现未还原名称的魔兽窗口:", NameWithNumber, "立刻将其还原为 魔兽世界。")
-        win32gui.SetWindowText(win, '魔兽世界')
-    else:
-        i+=1
+            while True:
+                print("new loop begin.")
+                # step 2, 将所有窗口有序重名 1,2,3,4......n   
+                winsNumber = SetAliasWindows()
 
-while True:
-    print("new loop begin.")
-    # step 2, 将所有窗口有序重名 1,2,3,4......n   
-    winsNumber = SetAliasWindows()
+                # step 3, loop for running
+                run(winsNumber)
+                
+                # step 4, 每次loop结束停顿一段时间t, t<离线时间, 最好设置t为随机数
+                A = 0
+                B = 1
+                a = random.uniform(A,B)
+                C = 2 #小数精度
+                # 选取0~1之间的随即小数作为base, 然后拉长到0~300秒
+                t = round(a,C) * 300
+                print("本次随机间隔为:",t)
+                time.sleep(t)
+        elif cmd == "2":
+            sys.exit(0)
+    except KeyboardInterrupt:
+        handler()
 
-    # step 3, loop for running
-    run(winsNumber)
-    
-    # step 4, 每次loop结束停顿一段时间t, t<离线时间, 最好设置t为随机数
-    A = 0
-    B = 1
-    a = random.uniform(A,B)
-    C = 2 #小数精度
-    # 选取0~1之间的随即小数作为base, 然后拉长到0~300秒
-    t = round(a,C) * 300
-    print("本次随机间隔为:",t)
-    time.sleep(t)
+handler()
